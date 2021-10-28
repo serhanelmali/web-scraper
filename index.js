@@ -5,11 +5,23 @@ const express = require("express");
 
 const app = express();
 
-const url = "blank";
+const url = "https://www.theguardian.com/";
+const scrappedDatas = [];
 
-axios(url).then((response) => {
-  const html = response.data;
-  console.log(html);
-});
+axios(url)
+  .then((response) => {
+    const html = response.data;
+    const $ = cheerio.load(html);
+    $(".fc-item__title", html).each(function () {
+      const title = $(this).text();
+      const url = $(this).find("a").attr("href");
+      scrappedDatas.push({
+        title,
+        url,
+      });
+    });
+    console.log(scrappedDatas);
+  })
+  .catch((err) => console.log(err));
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
